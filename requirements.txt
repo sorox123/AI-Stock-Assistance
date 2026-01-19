@@ -7,7 +7,7 @@ python-dotenv>=1.0.0
 alpaca-trade-api>=3.0.0
 
 # Technical Analysis
-pandas-ta>=0.4.67b0
+# pandas-ta>=0.4.67b0  # Not used - we built custom indicators
 
 # Sentiment Analysis
 vaderSentiment>=3.3.2
