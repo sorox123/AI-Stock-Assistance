@@ -39,12 +39,12 @@ def create_formatted_report(results, account_info, start_time, end_time):
         report_lines.append(f"Account Status:   {account_info.get('status', 'UNKNOWN')}")
     report_lines.append("")
     
-    # Categorize signals
-    strong_buy = [r for r in results if r.get('recommendation') == 'STRONG_BUY']
-    buy = [r for r in results if r.get('recommendation') == 'BUY']
-    hold = [r for r in results if r.get('recommendation') == 'HOLD']
-    sell = [r for r in results if r.get('recommendation') == 'SELL']
-    strong_sell = [r for r in results if r.get('recommendation') == 'STRONG_SELL']
+    # Categorize signals - using correct keys
+    strong_buy = [r for r in results if r.get('signals', {}).get('overall_signal') == 'strong_buy']
+    buy = [r for r in results if r.get('signals', {}).get('overall_signal') == 'buy']
+    hold = [r for r in results if r.get('signals', {}).get('overall_signal') == 'hold']
+    sell = [r for r in results if r.get('signals', {}).get('overall_signal') == 'sell']
+    strong_sell = [r for r in results if r.get('signals', {}).get('overall_signal') == 'strong_sell']
     
     # Summary Statistics
     report_lines.append("-" * 80)
@@ -63,11 +63,11 @@ def create_formatted_report(results, account_info, start_time, end_time):
         report_lines.append("=" * 80)
         report_lines.append("STRONG BUY OPPORTUNITIES")
         report_lines.append("=" * 80)
-        for i, stock in enumerate(sorted(strong_buy, key=lambda x: x['signal_strength'], reverse=True), 1):
+        for i, stock in enumerate(sorted(strong_buy, key=lambda x: x['signals']['strength'], reverse=True), 1):
             report_lines.append(f"\n{i}. {stock['symbol']}")
             report_lines.append(f"   Current Price:     ${stock['current_price']:.2f}")
-            report_lines.append(f"   Signal Strength:   {stock['signal_strength']:.2f}")
-            report_lines.append(f"   Recommendation:    {stock['recommendation']}")
+            report_lines.append(f"   Signal Strength:   {stock['signals']['strength']:.2f}")
+            report_lines.append(f"   Recommendation:    {stock['signals']['overall_signal'].upper()}")
             report_lines.append(f"   Reasons:")
             for reason in stock['signals']['reasons'][:5]:
                 report_lines.append(f"      - {reason}")
@@ -78,10 +78,10 @@ def create_formatted_report(results, account_info, start_time, end_time):
         report_lines.append("=" * 80)
         report_lines.append("BUY OPPORTUNITIES")
         report_lines.append("=" * 80)
-        for i, stock in enumerate(sorted(buy, key=lambda x: x['signal_strength'], reverse=True), 1):
+        for i, stock in enumerate(sorted(buy, key=lambda x: x['signals']['strength'], reverse=True), 1):
             report_lines.append(f"\n{i}. {stock['symbol']}")
             report_lines.append(f"   Current Price:     ${stock['current_price']:.2f}")
-            report_lines.append(f"   Signal Strength:   {stock['signal_strength']:.2f}")
+            report_lines.append(f"   Signal Strength:   {stock['signals']['strength']:.2f}")
             report_lines.append(f"   Reasons:")
             for reason in stock['signals']['reasons'][:3]:
                 report_lines.append(f"      - {reason}")
@@ -95,8 +95,8 @@ def create_formatted_report(results, account_info, start_time, end_time):
         for stock in strong_sell + sell:
             report_lines.append(f"\n{stock['symbol']}")
             report_lines.append(f"   Current Price:     ${stock['current_price']:.2f}")
-            report_lines.append(f"   Signal Strength:   {stock['signal_strength']:.2f}")
-            report_lines.append(f"   Recommendation:    {stock['recommendation']}")
+            report_lines.append(f"   Signal Strength:   {stock['signals']['strength']:.2f}")
+            report_lines.append(f"   Recommendation:    {stock['signals']['overall_signal'].upper()}")
             report_lines.append(f"   Reasons:")
             for reason in stock['signals']['reasons'][:3]:
                 report_lines.append(f"      - {reason}")
@@ -109,12 +109,12 @@ def create_formatted_report(results, account_info, start_time, end_time):
         report_lines.append("=" * 80)
         report_lines.append(f"{'Symbol':<10} {'Price':<12} {'Strength':<12} {'Status'}")
         report_lines.append("-" * 80)
-        for stock in sorted(hold, key=lambda x: x['signal_strength'], reverse=True):
+        for stock in sorted(hold, key=lambda x: x['signals']['strength'], reverse=True):
             report_lines.append(
                 f"{stock['symbol']:<10} "
                 f"${stock['current_price']:<11.2f} "
-                f"{stock['signal_strength']:<12.2f} "
-                f"{stock['recommendation']}"
+                f"{stock['signals']['strength']:<12.2f} "
+                f"{stock['signals']['overall_signal'].upper()}"
             )
         report_lines.append("")
     
@@ -125,13 +125,13 @@ def create_formatted_report(results, account_info, start_time, end_time):
     report_lines.append(f"{'Symbol':<10} {'Price':<12} {'Signal':<15} {'Strength':<10} {'Recommendation'}")
     report_lines.append("-" * 80)
     
-    for stock in sorted(results, key=lambda x: x['signal_strength'], reverse=True):
+    for stock in sorted(results, key=lambda x: x['signals']['strength'], reverse=True):
         report_lines.append(
             f"{stock['symbol']:<10} "
             f"${stock['current_price']:<11.2f} "
-            f"{stock['signals']['signal']:<15} "
-            f"{stock['signal_strength']:<10.2f} "
-            f"{stock['recommendation']}"
+            f"{stock['signals']['overall_signal']:<15} "
+            f"{stock['signals']['strength']:<10.2f} "
+            f"{stock['signals']['overall_signal'].upper()}"
         )
     
     report_lines.append("")
