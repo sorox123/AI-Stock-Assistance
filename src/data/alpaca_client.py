@@ -123,6 +123,39 @@ class AlpacaClient:
             print(f"[ERROR] Error fetching positions: {e}")
             return []
     
+    def get_tradable_assets(self, min_price: float = 5.0, max_price: float = 500.0, 
+                           min_volume: int = 1000000) -> List[str]:
+        """
+        Get list of tradable stocks filtered by price range and volume
+        
+        Args:
+            min_price: Minimum stock price filter
+            max_price: Maximum stock price filter
+            min_volume: Minimum average daily volume
+            
+        Returns:
+            List of stock symbols
+        """
+        try:
+            # Get all active US equity assets
+            assets = self.api.list_assets(status='active', asset_class='us_equity')
+            
+            # Filter for tradable stocks
+            tradable = []
+            for asset in assets:
+                # Only include stocks that are tradable
+                if (asset.tradable and 
+                    asset.exchange in ['NASDAQ', 'NYSE', 'ARCA'] and
+                    not asset.symbol.endswith('W')):  # Exclude warrants
+                    tradable.append(asset.symbol)
+            
+            print(f"[OK] Found {len(tradable)} tradable assets on major exchanges")
+            return tradable
+            
+        except Exception as e:
+            print(f"[ERROR] Error fetching tradable assets: {e}")
+            return []
+    
     def is_market_open(self) -> bool:
         """Check if the market is currently open"""
         try:
