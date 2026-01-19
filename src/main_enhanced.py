@@ -17,13 +17,14 @@ sys.path.insert(0, os.path.abspath(os.path.dirname(__file__) + '/..'))
 
 from src.strategies.trading_strategy import TradingStrategy
 from src.trading.paper_trader import PaperTrader
+from src.portfolio.portfolio_manager import PortfolioManager
 
 
 class EnhancedTradingBot:
     """Enhanced trading bot with universe scanning and auto-trading"""
     
     def __init__(self, auto_trade: bool = False, scan_universe: bool = False, 
-                 max_stocks: int = 50):
+                 max_stocks: int = 50, auto_allocate: bool = False):
         """
         Initialize the enhanced trading bot
         
@@ -31,19 +32,23 @@ class EnhancedTradingBot:
             auto_trade: If True, automatically execute trades
             scan_universe: If True, scan all tradable stocks
             max_stocks: Maximum number of stocks to scan
+            auto_allocate: If True, automatically allocate capital to best opportunities
         """
         self.auto_trade = auto_trade
         self.scan_universe = scan_universe
         self.max_stocks = max_stocks
+        self.auto_allocate = auto_allocate
         
         # Initialize strategy and trader
         self.strategy = TradingStrategy()
         self.trader = PaperTrader() if auto_trade else None
+        self.portfolio_mgr = PortfolioManager() if auto_allocate else None
         
         # Get current positions
         self.current_positions = self._get_position_symbols()
         
         print(f"[CONFIG] Auto-trade: {auto_trade}")
+        print(f"[CONFIG] Auto-allocate: {auto_allocate}")
         print(f"[CONFIG] Scan universe: {scan_universe}")
         print(f"[CONFIG] Max stocks: {max_stocks}")
         print(f"[POSITIONS] Currently holding: {len(self.current_positions)} stocks")
@@ -197,6 +202,55 @@ class EnhancedTradingBot:
         # Filter signals by position ownership
         filtered = self._filter_signals(results)
         
+        # === AUTOMATED PORTFOLIO ALLOCATION ===
+        if self.auto_allocate and self.portfolio_mgr:
+            print("\n" + "=" * 70)
+            print("AUTOMATED PORTFOLIO ALLOCATION")
+            print("=" * 70)
+            
+            # Get available capital
+            capital = self.portfolio_mgr.get_available_capital()
+            
+            if capital > 0:
+                # Rank opportunities by risk/reward
+                opportunities = self.portfolio_mgr.rank_opportunities(
+                    filtered['buy'],
+                    min_ratio=1.5  # Require at least 1.5:1 risk/reward
+                )
+                
+                if opportunities:
+                    # Allocate capital intelligently
+                    allocations = self.portfolio_mgr.allocate_capital(
+                        opportunities,
+                        capital,
+                        diversify=True  # Spread across multiple stocks
+                    )
+                    
+                    # Generate report
+                    report = self.portfolio_mgr.generate_allocation_report(allocations)
+                    print(report)
+                    
+                    # Execute trades if auto-trade is enabled
+                    if self.auto_trade and self.trader and allocations:
+                        print("\n[EXECUTING] Placing orders for allocated positions...")
+                        for alloc in allocations:
+                            try:
+                                order = self.trader.place_bracket_order(
+                                    symbol=alloc['symbol'],
+                                    qty=alloc['shares'],
+                                    side='buy'
+                                )
+                                if order:
+                                    print(f"  ✓ {alloc['symbol']}: Order placed successfully")
+                                else:
+                                    print(f"  ✗ {alloc['symbol']}: Order failed")
+                            except Exception as e:
+                                print(f"  ✗ {alloc['symbol']}: {e}")
+                else:
+                    print("\n[ALLOCATION] No opportunities meet minimum risk/reward threshold (1.5:1)")
+            else:
+                print("\n[ALLOCATION] No capital available for new investments")
+        
         # Display results
         print("\n" + "=" * 70)
         print("POSITION-AWARE RECOMMENDATIONS")
@@ -224,8 +278,8 @@ class EnhancedTradingBot:
                 for reason in reasons[:3]:  # Top 3 reasons
                     print(f"  - {reason}")
                 
-                # Auto-trade if enabled
-                if self.auto_trade:
+                # Auto-trade if enabled (and not using auto-allocation)
+                if self.auto_trade and not self.auto_allocate:
                     self._execute_trade(result, 'BUY')
         else:
             print("\n[BUY OPPORTUNITIES] No buy signals")
@@ -292,6 +346,7 @@ def main():
     
     # Parse configuration from environment
     auto_trade = os.getenv('AUTO_TRADE', 'false').lower() == 'true'
+    auto_allocate = os.getenv('AUTO_ALLOCATE', 'false').lower() == 'true'
     scan_universe = os.getenv('SCAN_UNIVERSE', 'false').lower() == 'true'
     max_stocks = int(os.getenv('MAX_STOCKS_TO_SCAN', '50'))
     
@@ -319,12 +374,32 @@ def main():
             print("This ensures you understand trades will be placed automatically.")
             sys.exit(1)
     
+    # Safety check for auto-allocation
+    if auto_allocate:
+        print("\n" + "!" * 70)
+        print("WARNING: AUTOMATED PORTFOLIO ALLOCATION IS ENABLED!")
+        print("The bot will automatically allocate capital to best opportunities.")
+        print("!" * 70)
+        
+        confirm = os.getenv('AUTO_ALLOCATE_CONFIRMED', 'false').lower()
+        if confirm != 'true':
+            print("\n[ERROR] Auto-allocation requires AUTO_ALLOCATE_CONFIRMED=true in .env")
+            print("This ensures you understand capital will be deployed automatically.")
+            sys.exit(1)
+        
+        # Auto-allocate requires auto-trade
+        if not auto_trade:
+            print("\n[ERROR] AUTO_ALLOCATE requires AUTO_TRADE=true")
+            print("Auto-allocation needs auto-trading to execute the allocations.")
+            sys.exit(1)
+    
     # Initialize and run bot
     try:
         bot = EnhancedTradingBot(
             auto_trade=auto_trade,
             scan_universe=scan_universe,
-            max_stocks=max_stocks
+            max_stocks=max_stocks,
+            auto_allocate=auto_allocate
         )
         bot.run()
     except Exception as e:
