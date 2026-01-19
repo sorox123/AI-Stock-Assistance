@@ -1,0 +1,23 @@
+# Core dependencies
+pandas>=2.0.0
+numpy>=1.24.0
+python-dotenv>=1.0.0
+
+# Trading & Market Data
+alpaca-trade-api>=3.0.0
+
+# Technical Analysis
+pandas-ta>=0.3.14
+
+# Sentiment Analysis
+vaderSentiment>=3.3.2
+requests>=2.31.0
+
+# Configuration
+pyyaml>=6.0
+
+# Testing
+pytest>=7.4.0
+
+# Scheduling (for local runs)
+schedule>=1.2.0

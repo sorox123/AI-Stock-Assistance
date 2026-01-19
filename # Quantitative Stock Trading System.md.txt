@@ -1,0 +1,219 @@
+# Quantitative Stock Trading System Plan
+*(Context-Aware, Event-Aware, Math-Driven)*
+
+## 1. Core Objective
+
+Design and build a **math-driven, emotionally neutral stock trading system** that:
+
+- Removes gut-based decision making
+- Uses quantitative logic and historical evidence
+- Runs continuously in the background (cloud-hosted)
+- Provides **real-time alerts** when meaningful conditions arise
+- Supports both:
+  - Short-term opportunities
+  - Long-term capital growth
+- Is responsible, ethical, and risk-aware
+- Is ready for cautious live deployment around **mid-January**
+- Prioritizes **decision support over blind automation**
+
+Initial capital target: **~$1,000**, deployed gradually.
+
+The system is meant to **inform and assist decisions**, not act as an unsupervised trading bot.
+
+---
+
+## 2. Guiding Philosophy
+
+- Humans are emotional
+- Math is consistent
+- Discipline beats vibes
+
+This system explicitly avoids:
+- “Black box” hype
+- Over-automation without safeguards
+- Claims of perfect prediction
+
+**Framing:**  
+> This is a **radar system**, not an autopilot.
+
+---
+
+## 3. Technology Direction
+
+### Language
+- **Python (preferred)**
+  - Industry standard for quantitative finance
+  - Strong ecosystem for:
+    - Data analysis
+    - Statistics
+    - Backtesting
+    - NLP / sentiment analysis
+  - Easier iteration and research than Java
+
+### Hosting
+- **Cloud-based execution**
+  - Runs 24/7 without a personal computer
+  - Supports scheduled jobs and background processes
+  - Replit initially; VPS later if needed
+
+### Broker Integration
+- **Alpaca API**
+  - Paper trading first
+  - Live trading only after extended validation
+  - Broker execution is required for any real trades
+
+---
+
+## 4. System Architecture (Three-Layer Model)
+
+### Layer 1 — Market Data & Technical Analysis
+
+Baseline quantitative layer.
+
+Includes:
+- Historical and near-real-time price data
+- Volume, volatility, momentum
+- Technical indicators:
+  - RSI
+  - Moving averages
+  - Trend filters
+- Regime detection (risk-on vs risk-off)
+
+Purpose:
+- Identify statistically meaningful patterns
+- Define trade candidates
+- Measure and monitor edge
+
+---
+
+### Layer 2 — News & Legislation Awareness (Context Layer)
+
+Adds real-world context beyond price action.
+
+#### News Analysis
+- Scan financial and sector-specific news
+- Track:
+  - Frequency spikes
+  - Sentiment (positive / negative / uncertainty)
+  - Narrative novelty (new vs repeated themes)
+- Associate topics with impacted sectors or symbols
+
+Example:
+> Regulatory news volume increases sharply before price reacts.
+
+---
+
+#### Legislative & Policy Monitoring
+- Track pending legislation and regulatory actions
+- Monitor:
+  - Bill introductions
+  - Committee movement
+  - Floor votes
+  - Executive or agency actions
+- Keyword and topic tagging:
+  - “Ban”
+  - “Subsidy”
+  - “Tax”
+  - “Restriction”
+  - “Mandate”
+- Map bills to impacted sectors and industries
+
+Key insight:
+> Markets often price **probability shifts**, not final outcomes.
+
+Purpose:
+- Detect rising uncertainty
+- Identify policy-driven regime changes
+- Add risk context before price moves
+
+---
+
+### Layer 3 — Decision Logic & Alerts
+
+This layer synthesizes Layers 1 and 2.
+
+Responsibilities:
+- Modify confidence in technical signals based on context
+- Flag elevated-risk environments
+- Suppress or downgrade signals during:
+  - Policy shocks
+  - Narrative regime shifts
+- Trigger alerts when:
+  - Technical + contextual conditions align
+  - Risk thresholds are breached
+  - Historical analogs suggest instability
+
+Important rule:
+- News and legislation **modify** decisions
+- They do **not blindly override price data**
+
+---
+
+## 5. Historical Alignment & Learning
+
+The system should evaluate historical parallels:
+
+- When similar legislation appeared:
+  - Price response
+  - Volatility changes
+- When similar news narratives emerged:
+  - Trend continuation vs reversal
+  - Correlation shifts
+- Duration and decay of effects
+
+Goal:
+- Probabilistic reasoning
+- Better exits than entries
+- Reduced surprise risk
+
+---
+
+## 6. Execution Strategy (Phased & Responsible)
+
+### Phase 1 — Research & Backtesting
+- No live money
+- Validate strategies on historical data
+- Stress-test assumptions
+
+### Phase 2 — Paper Trading
+- Simulated execution via Alpaca
+- Continuous monitoring for weeks
+- Stability and discipline verification
+
+### Phase 3 — Limited Live Deployment
+- Small initial allocation
+- Strict risk controls
+- Alerts prioritized over automation
+- Gradual scaling only if live behavior matches expectations
+
+---
+
+## 7. What This System Is Not
+
+This system is **not**:
+- A high-frequency trading bot
+- A meme-stock chaser
+- A guaranteed profit engine
+- An unsupervised AI money printer
+
+It **is**:
+- A disciplined, context-aware market intelligence platform
+
+---
+
+## 8. Ethical & Personal Alignment
+
+The system aligns with:
+- Financial independence without exploitation
+- Transparency and responsibility
+- Long-term thinking
+- Using resources to help others, not merely accumulate wealth
+
+---
+
+## 9. Final Framing
+
+> **This system is a radar, not an autopilot.**
+
+It does not make life decisions.
+It warns when storms are forming — often before they are visible.

@@ -1,0 +1,35 @@
+# Trading Strategy Configuration
+
+# Risk Management
+risk:
+  max_position_size: 0.10    # 10% of portfolio per position
+  max_daily_loss: 0.03       # 3% max daily loss before shutdown
+  stop_loss_pct: 0.05        # 5% stop loss per position
+  max_positions: 5           # Maximum concurrent positions
+  min_volume: 1000000        # Minimum daily volume for stocks
+
+# Technical Analysis Parameters
+technical:
+  rsi:
+    period: 14
+    oversold: 30
+    overbought: 70
+  moving_averages:
+    short_period: 20
+    long_period: 50
+  bollinger_bands:
+    period: 20
+    std_dev: 2
+
+# Sentiment Analysis
+sentiment:
+  enabled: true
+  news_lookback_hours: 24
+  min_articles: 3            # Minimum news articles required
+  weight: 0.3                # Weight in final decision (0-1)
+
+# Alert Settings
+alerts:
+  log_enabled: true
+  email_enabled: false       # Future: email alerts
+  cooldown_minutes: 60       # Minimum time between alerts for same stock
