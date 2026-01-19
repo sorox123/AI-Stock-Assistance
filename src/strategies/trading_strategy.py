@@ -14,6 +14,8 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 
 from src.data.alpaca_client import AlpacaClient
 from src.analysis.technical_indicators import TechnicalAnalyzer
+from src.analysis.sentiment_analyzer import SentimentAnalyzer
+from src.risk.risk_manager import RiskManager
 
 
 class TradingStrategy:
@@ -29,6 +31,13 @@ class TradingStrategy:
         # Initialize components
         self.alpaca = AlpacaClient()
         self.analyzer = TechnicalAnalyzer(self.config['technical'])
+        self.sentiment = SentimentAnalyzer()
+        self.risk_mgr = RiskManager(config_path)
+        
+        # Get account info and set starting value
+        account = self.alpaca.get_account_info()
+        if account:
+            self.risk_mgr.set_starting_portfolio_value(account['portfolio_value'])
         
         print("[OK] Trading strategy initialized")
     
@@ -69,6 +78,24 @@ class TradingStrategy:
         if 'error' in analysis:
             print(f"[ERROR] Analysis failed: {analysis['error']}")
             return None
+        
+        # Add sentiment analysis if enabled
+        if self.config['sentiment']['enabled']:
+            sentiment_result = self.sentiment.analyze_symbol(symbol, days_back=1)
+            analysis['sentiment'] = sentiment_result
+            
+            # Adjust signal strength based on sentiment
+            if sentiment_result.get('enabled', False):
+                sentiment_weight = self.config['sentiment']['weight']
+                sentiment_score = sentiment_result.get('sentiment_score', 0)
+                
+                # Apply sentiment to overall signal
+                analysis['signals']['strength'] += sentiment_score * sentiment_weight
+                
+                if sentiment_score != 0:
+                    analysis['signals']['reasons'].append(
+                        f"Sentiment: {sentiment_result['sentiment_label']} ({sentiment_score:+.2f})"
+                    )
         
         # Add symbol and timestamp
         analysis['symbol'] = symbol
