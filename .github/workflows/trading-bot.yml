@@ -38,13 +38,15 @@ jobs:
         STOP_LOSS_PCT: 0.05
         MAX_POSITIONS: 5
         LOG_LEVEL: INFO
+        SCAN_UNIVERSE: true
+        MAX_STOCKS_TO_SCAN: 50
       run: |
-        python src/main.py
+        python src/main_with_reports.py
     
-    - name: Upload logs
+    - name: Upload logs and reports
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: trading-logs-${{ github.run_number }}
+        name: trading-reports-${{ github.run_number }}
         path: logs/
         retention-days: 30
